@@ -1,24 +1,27 @@
 /**
- *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
- *
- * Context doc: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html 
- * @param {Object} context
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- * 
+ * Version: v1
  */
 
 export const lambdaHandler = async (event, context) => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'hello world',
-      })
-    };
+  try {
+    let log = {};
+    log.LambdaFunction = context.functionName;
+    log.LambdaVersion = context.functionVersion;
 
-    return response;
-  };
-  
+    console.log("Response:", JSON.stringify(log, null, 2));
+
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(log),
+    };
+  } catch (error) {
+    console.error("Error processing request:", error);
+
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error: "Internal Server Error" }),
+    };
+  }
+};
